@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { AppStep, CartItem } from './types';
-import { IMAGES } from './constants';
+import { AppStep, CartItem, Product, ProductId } from './types';
+import { PRODUCT_IMAGES } from './constants';
 import { TopAppBar } from './components/TopAppBar';
 import { ScanStep } from './components/ScanStep';
 import { ReviewStep } from './components/ReviewStep';
@@ -8,39 +8,99 @@ import { PaymentStep } from './components/PaymentStep';
 import { SuccessStep } from './components/SuccessStep';
 import { AnimatePresence } from 'motion/react';
 
-const INITIAL_CART: CartItem[] = [
-  { id: '1', name: 'Kake Udon', price: 420, quantity: 1, imageUrl: IMAGES.KAKE_UDON },
-  { id: '2', name: 'Tempura', price: 180, quantity: 1, imageUrl: IMAGES.TEMPURA },
-  { id: '3', name: 'Green Tea', price: 120, quantity: 1, imageUrl: IMAGES.GREEN_TEA }
-];
+const PRODUCTS: Record<ProductId, Product> = {
+  kake_udon: { id: 'kake_udon', name: 'かけうどん', price: 420, imageUrl: PRODUCT_IMAGES.kake_udon },
+  kitsune_udon: { id: 'kitsune_udon', name: 'きつねうどん', price: 520, imageUrl: PRODUCT_IMAGES.kitsune_udon },
+  tempura: { id: 'tempura', name: '天ぷら', price: 180, imageUrl: PRODUCT_IMAGES.tempura },
+  onigiri: { id: 'onigiri', name: 'おにぎり', price: 150, imageUrl: PRODUCT_IMAGES.onigiri },
+  inari: { id: 'inari', name: 'いなり寿司', price: 130, imageUrl: PRODUCT_IMAGES.inari },
+  tea: { id: 'tea', name: 'お茶', price: 120, imageUrl: PRODUCT_IMAGES.tea }
+};
+
+const PRODUCT_ORDER: ProductId[] = ['kake_udon', 'kitsune_udon', 'tempura', 'onigiri', 'inari', 'tea'];
+
+function countMatches(fileName: string, pattern: RegExp) {
+  return fileName.match(pattern)?.length ?? 0;
+}
+
+export function parseImageFileName(fileName: string): CartItem[] {
+  const normalized = fileName.toLowerCase();
+  const counts: Partial<Record<ProductId, number>> = {};
+  const kitsuneCount = countMatches(normalized, /kitsune/g);
+
+  if (kitsuneCount > 0) {
+    counts.kitsune_udon = kitsuneCount;
+  } else {
+    const kakeCount = countMatches(normalized, /kake|udon/g);
+    if (kakeCount > 0) counts.kake_udon = kakeCount;
+  }
+
+  const tempuraCount = countMatches(normalized, /tempura/g);
+  const onigiriCount = countMatches(normalized, /onigiri/g);
+  const inariCount = countMatches(normalized, /inari/g);
+  const teaCount = countMatches(normalized, /tea|ocha/g);
+
+  if (tempuraCount > 0) counts.tempura = tempuraCount;
+  if (onigiriCount > 0) counts.onigiri = onigiriCount;
+  if (inariCount > 0) counts.inari = inariCount;
+  if (teaCount > 0) counts.tea = teaCount;
+
+  return PRODUCT_ORDER.flatMap((id) => {
+    const quantity = counts[id] ?? 0;
+    return quantity > 0 ? [{ ...PRODUCTS[id], quantity }] : [];
+  });
+}
+
+export function calculateTotal(items: CartItem[]) {
+  return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<AppStep>(AppStep.SCAN);
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [uploadedFileName, setUploadedFileName] = useState('');
 
-  const handleScanComplete = () => {
-    // Simulate AI detection loading initial cart items
-    setCart([...INITIAL_CART]);
+  const handleImageUpload = (file: File) => {
+    setUploadedFileName(file.name);
+    setCart(parseImageFileName(file.name));
     setCurrentStep(AppStep.REVIEW);
   };
 
-  const updateQuantity = (id: string, delta: number) => {
-    setCart((prevCart) => prevCart.map(item => {
-      if (item.id === id) {
-        const newQty = Math.max(1, item.quantity + delta);
-        return { ...item, quantity: newQty };
+  const addItem = (itemId: ProductId) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === itemId);
+      if (existingItem) {
+        return prevCart.map((item) => item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item);
       }
-      return item;
-    }));
+      return [...prevCart, { ...PRODUCTS[itemId], quantity: 1 }];
+    });
   };
 
-  const removeItem = (id: string) => {
-    setCart((prevCart) => prevCart.filter(item => item.id !== id));
+  const incrementItem = (itemId: ProductId) => {
+    setCart((prevCart) => prevCart.map((item) => (
+      item.id === itemId ? { ...item, quantity: item.quantity + 1 } : item
+    )));
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const decrementItem = (itemId: ProductId) => {
+    setCart((prevCart) => prevCart.map((item) => (
+      item.id === itemId ? { ...item, quantity: Math.max(1, item.quantity - 1) } : item
+    )));
+  };
 
-  return (
+  const removeItem = (itemId: ProductId) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
+  };
+
+  const resetState = () => {
+    setCurrentStep(AppStep.SCAN);
+    setCart([]);
+    setUploadedFileName('');
+  };
+
+  const totalAmount = calculateTotal(cart);
+
+  const render = () => (
     <div className="min-h-screen flex flex-col bg-surface relative">
       {(currentStep === AppStep.SCAN || currentStep === AppStep.REVIEW || currentStep === AppStep.SUCCESS) && (
         <TopAppBar currentStep={currentStep} />
@@ -58,23 +118,24 @@ export default function App() {
         <AnimatePresence mode="wait">
           {currentStep === AppStep.SCAN && (
             <ScanStep 
-              key="scan"
-              onScanComplete={handleScanComplete} 
+              onImageUpload={handleImageUpload}
             />
           )}
           {currentStep === AppStep.REVIEW && (
             <ReviewStep 
-              key="review"
               cart={cart}
-              updateQuantity={updateQuantity}
+              uploadedFileName={uploadedFileName}
+              products={PRODUCT_ORDER.map((id) => PRODUCTS[id])}
+              addItem={addItem}
+              incrementItem={incrementItem}
+              decrementItem={decrementItem}
               removeItem={removeItem}
-              onRestartScan={() => setCurrentStep(AppStep.SCAN)}
+              onRestartScan={resetState}
               onProceedToPayment={() => setCurrentStep(AppStep.PAYMENT)}
             />
           )}
           {currentStep === AppStep.PAYMENT && (
             <PaymentStep 
-              key="payment"
               amount={totalAmount}
               onBack={() => setCurrentStep(AppStep.REVIEW)}
               onPaymentComplete={() => setCurrentStep(AppStep.SUCCESS)}
@@ -82,13 +143,14 @@ export default function App() {
           )}
           {currentStep === AppStep.SUCCESS && (
             <SuccessStep 
-              key="success"
               amount={totalAmount}
-              onRestart={() => setCurrentStep(AppStep.SCAN)}
+              onRestart={resetState}
             />
           )}
         </AnimatePresence>
       </div>
     </div>
   );
+
+  return render();
 }

@@ -5,8 +5,17 @@ export enum AppStep {
   SUCCESS
 }
 
+export type ProductId = 'kake_udon' | 'kitsune_udon' | 'tempura' | 'onigiri' | 'inari' | 'tea';
+
+export interface Product {
+  id: ProductId;
+  name: string;
+  price: number;
+  imageUrl: string;
+}
+
 export interface CartItem {
-  id: string;
+  id: ProductId;
   name: string;
   price: number;
   quantity: number;

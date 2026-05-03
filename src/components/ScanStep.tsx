@@ -1,12 +1,24 @@
+import { useRef, type ChangeEvent } from 'react';
 import { motion } from 'motion/react';
 import { Camera, Utensils, CheckCircle } from 'lucide-react';
 import { IMAGES } from '../constants';
 
 interface ScanStepProps {
-  onScanComplete: () => void;
+  onImageUpload: (file: File) => void;
 }
 
-export function ScanStep({ onScanComplete }: ScanStepProps) {
+export function ScanStep({ onImageUpload }: ScanStepProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) onImageUpload(file);
+  };
+
   return (
     <motion.main 
       initial={{ opacity: 0, y: 20 }}
@@ -36,28 +48,36 @@ export function ScanStep({ onScanComplete }: ScanStepProps) {
       </div>
 
       <div className="text-center mb-10 max-w-2xl mx-auto">
-        <h1 className="typography-display-lg text-on-surface mb-4">Upload your tray image to start checkout</h1>
-        <p className="typography-body-xl text-on-surface-variant">Place your tray clearly under the camera or upload a photo to automatically detect your items.</p>
+        <h1 className="typography-display-lg text-on-surface mb-4">YOLOセルフレジ</h1>
+        <p className="typography-body-xl text-on-surface-variant">料理画像をアップロードすると、ファイル名から商品を認識します。</p>
       </div>
 
       {/* Upload Area */}
       <div 
-        onClick={onScanComplete}
+        onClick={openFilePicker}
         className="w-full max-w-3xl bg-surface-container-lowest rounded-xl border-2 border-dashed border-outline-variant shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center p-12 hover:bg-surface-container-low transition-colors cursor-pointer group"
       >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleFileChange}
+          data-testid="tray-image-input"
+        />
         <div className="w-32 h-32 bg-secondary-container rounded-full flex items-center justify-center mb-8 group-hover:scale-105 transition-transform duration-300">
           <Utensils className="w-16 h-16 text-on-secondary-container" strokeWidth={1.5} />
         </div>
         
         <button 
           className="bg-primary text-on-primary typography-body-xl py-4 px-8 rounded-full shadow-md hover:bg-surface-tint hover:shadow-lg transition-all min-h-[64px] flex items-center justify-center space-x-3 w-full max-w-sm mb-6 flex-shrink-0 font-semibold"
-          onClick={(e) => { e.stopPropagation(); onScanComplete(); }}
+          onClick={(e) => { e.stopPropagation(); openFilePicker(); }}
         >
           <Camera className="w-6 h-6" />
-          <span>Upload Tray Image</span>
+          <span>画像をアップロード</span>
         </button>
         
-        <p className="typography-body-xl text-on-surface-variant text-center">or simply place tray on the designated scanner pad below.</p>
+        <p className="typography-body-xl text-on-surface-variant text-center">例: udon_tempura_onigiri.jpg</p>
       </div>
 
       {/* Visual Hint */}
@@ -73,8 +93,8 @@ export function ScanStep({ onScanComplete }: ScanStepProps) {
           </div>
         </div>
         <div>
-          <h3 className="typography-title-lg text-on-surface mb-1">Make sure items are clearly visible</h3>
-          <p className="typography-body-xl text-on-surface-variant text-sm">Avoid stacking bowls or covering plates with napkins for best detection.</p>
+          <h3 className="typography-title-lg text-on-surface mb-1">ファイル名で認識するデモです</h3>
+          <p className="typography-body-xl text-on-surface-variant text-sm">kake / udon / kitsune / tempura / onigiri / inari / tea / ocha に対応しています。</p>
         </div>
       </div>
     </motion.main>

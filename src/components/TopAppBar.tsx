@@ -10,14 +10,14 @@ export function TopAppBar({ currentStep }: TopAppBarProps) {
     <header className="bg-surface-container-lowest border-b-2 border-surface-variant sticky top-0 z-50">
       <div className="flex justify-between items-center px-10 py-6 w-full max-w-full">
         <div className="typography-headline-md text-primary tracking-tight">
-          YOLO Cafeteria Self Checkout
+          YOLOセルフレジ
         </div>
         
         {currentStep === AppStep.REVIEW && (
           <div className="hidden md:flex space-x-12">
             {/* Top-level Navigation Example */}
             <div className="typography-title-lg text-primary border-b-4 border-primary pb-1">
-              Review
+              認識結果確認
             </div>
           </div>
         )}

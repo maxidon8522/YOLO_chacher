@@ -18,10 +18,10 @@ export function PaymentStep({ amount, onBack, onPaymentComplete }: PaymentStepPr
     >
       {/* Header */}
       <header className="w-full bg-surface-bright py-8 border-b border-surface-variant flex flex-col items-center justify-center">
-        <h1 className="typography-headline-md text-on-surface mb-2">QR Payment</h1>
+        <h1 className="typography-headline-md text-on-surface mb-2">QR決済</h1>
         <div className="flex items-center space-x-2 text-surface-tint">
           <Lock className="w-6 h-6" />
-          <span className="typography-body-xl">Secure Transaction</span>
+          <span className="typography-body-xl">ダミー決済</span>
         </div>
       </header>
 
@@ -31,7 +31,7 @@ export function PaymentStep({ amount, onBack, onPaymentComplete }: PaymentStepPr
         {/* Amount Display */}
         <div className="mb-10 text-center">
           <h2 className="typography-display-lg text-on-surface mb-2 text-6xl font-extrabold">¥{amount}</h2>
-          <p className="typography-body-xl text-on-surface-variant">Total Amount</p>
+          <p className="typography-body-xl text-on-surface-variant">合計金額</p>
         </div>
 
         {/* QR Code Container */}
@@ -53,7 +53,7 @@ export function PaymentStep({ amount, onBack, onPaymentComplete }: PaymentStepPr
         <div className="flex items-start space-x-4 max-w-md mx-auto bg-surface-container-low p-4 rounded-lg mb-12">
           <Info className="text-primary w-8 h-8 shrink-0 mt-0.5" />
           <p className="typography-body-xl text-on-surface-variant leading-relaxed">
-            Please scan the QR code with your mobile payment app to complete the transaction.
+            モック用のQRコードです。支払い完了ボタンで会計完了画面へ進みます。
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export function PaymentStep({ amount, onBack, onPaymentComplete }: PaymentStepPr
             className="w-full bg-primary hover:bg-surface-tint text-on-primary typography-title-lg py-5 px-6 rounded-lg transition-colors flex items-center justify-center space-x-3 shadow-sm min-h-[64px]"
           >
             <CheckCircle className="w-6 h-6" />
-            <span>Payment Completed</span>
+            <span>支払い完了</span>
           </button>
           
           <button 
@@ -72,7 +72,7 @@ export function PaymentStep({ amount, onBack, onPaymentComplete }: PaymentStepPr
             className="w-full bg-transparent border-2 border-outline text-on-surface-variant hover:bg-surface-container-low typography-title-lg py-5 px-6 rounded-lg transition-colors flex items-center justify-center space-x-3 min-h-[64px]"
           >
             <ArrowLeft className="w-6 h-6" />
-            <span>Back to Cart</span>
+            <span>戻る</span>
           </button>
         </div>
 

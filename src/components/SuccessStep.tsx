@@ -29,21 +29,21 @@ export function SuccessStep({ amount, onRestart }: SuccessStepProps) {
           <CheckCircle className="w-20 h-20 text-on-primary-container" strokeWidth={2.5} />
         </motion.div>
 
-        <h1 className="typography-display-lg text-on-surface mb-6">Checkout Complete!</h1>
+        <h1 className="typography-display-lg text-on-surface mb-6">会計が完了しました</h1>
         
         <div className="bg-surface-container-low rounded-lg py-4 px-8 mb-6 inline-block border border-surface-variant">
-          <p className="typography-title-lg text-primary font-bold">Paid: ¥{amount}</p>
+          <p className="typography-title-lg text-primary font-bold">支払い金額: ¥{amount}</p>
         </div>
 
         <p className="typography-body-xl text-on-surface-variant mb-12 max-w-md mx-auto">
-          Thank you for your visit. Have a great meal!
+          ご利用ありがとうございました。
         </p>
 
         <button 
           onClick={onRestart}
           className="bg-primary hover:bg-surface-tint text-on-primary typography-title-lg py-6 px-16 rounded-full shadow-md transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-4 min-h-[72px] min-w-[320px]"
         >
-          <span>Start Next Checkout</span>
+          <span>次の会計へ</span>
           <ArrowRight className="w-6 h-6" />
         </button>
 

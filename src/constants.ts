@@ -6,3 +6,12 @@ export const IMAGES = {
   GREEN_TEA: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCmyDGE1DKn9i328kDaNwUvA1lgSi4BYZX0SAAkGlemNLt3Ro38wArVm1sPLNn-IHKkWh2_2q9Sc3yxzBzKkZAI3X_pjDrQdIt2z_Car3zDynwhvCvdeuQw9fNHMjzKJsoPWlmnZKRTtbX6F2qWiDhO9qwqksXcRz7ZYFY1ZkGfPsGHhS0VKs0fICYRqzNRs46eP6F3YUCrsBibK3ZN0Qo7wMuv7nBNBlhitRKM9crfkF3fxbVvUkvt1a9od4KPY4Uvl4uvyDvq50A',
   QR_CODE: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAta-llQ8fMAV3pwbNZp7DkIrWC16uHzhs69Ji8fJCMJ4BjgyicXCxkX9YxhOlq7AUSF9nd_TpHR-JcVTbjYt9ka-t2r7khRPU0WKdNdEL7Rec-KgDV2dgxXnOSv6r0g7Gh6C60gYGMzTD6En1_nRLzp5wS2ovjh9oUuXXSzn5LUGx6OiihUO9oYctjoaGcSWvFuWOz_vB6L8wmz27sgrSv8IhPZ9Uj18so3BqgNDtFJxwMfzG233G7b5Mh3xix_5uWd8gBWxrmArY'
 };
+
+export const PRODUCT_IMAGES = {
+  kake_udon: IMAGES.KAKE_UDON,
+  kitsune_udon: IMAGES.KAKE_UDON,
+  tempura: IMAGES.TEMPURA,
+  onigiri: IMAGES.HEALTHY_TRAY,
+  inari: IMAGES.HEALTHY_TRAY,
+  tea: IMAGES.GREEN_TEA
+} as const;
